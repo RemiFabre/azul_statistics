@@ -220,6 +220,25 @@ def process_data(groups):
     return processed_groups
 
 
+def process_and_count_groups(groups):
+    processed_groups_count = {}
+    for group in groups:
+        processed_group = tuple(
+            tuple("0" if num == 0 else "X" for num in row) for row in group
+        )
+        # If the processed group is already in the dictionary, increment its count
+        if processed_group in processed_groups_count:
+            processed_groups_count[processed_group] += 1
+        else:
+            # Otherwise, add the processed group to the dictionary with a count of 1
+            processed_groups_count[processed_group] = 1
+    # sort by count
+    processed_groups_count = dict(
+        sorted(processed_groups_count.items(), key=lambda item: item[1], reverse=True)
+    )
+    return processed_groups_count
+
+
 def read_data_from_file(file_path):
     with open(file_path, "r") as file:
         groups = []
@@ -232,18 +251,26 @@ def read_data_from_file(file_path):
                 current_group = []
         if current_group:  # Add the last group if file doesn't end with an empty line
             groups.append(tuple(current_group))
+
     return groups
 
 
 def starting_positions():
     # Assuming your file content is stored in 'file_content'
     file_path = "../results/3_lines_worst_combinations.txt"
-    file_path = "../results/3_lines_best_combinations.txt"
+    # file_path = "../results/3_lines_best_combinations.txt"
     data = read_data_from_file(file_path)
-    unique_processed_data = process_data(data)
+    # unique_processed_data = process_data(data)
+    # # Print the processed data
+    # for group in unique_processed_data:
+    #     for line in group:
+    #         print(line)
+    #     print()
+    unique_processed_groups_count = process_and_count_groups(data)
 
-    # Print the processed data
-    for group in unique_processed_data:
+    # Print the processed data and the count of duplicates for each unique group
+    for group, count in unique_processed_groups_count.items():
+        print(f"Number of duplicates: {count}")
         for line in group:
             print(line)
         print()
@@ -259,9 +286,9 @@ def starting_positions():
 # analyze_histories(histories)
 
 ## Brute force all the possibilities for 2 lines
-scores, histories = perm2(5)
-plot_scores(scores, 2)
-analyze_histories(histories)
+# scores, histories = perm2(5)
+# plot_scores(scores, 2)
+# analyze_histories(histories)
 
 ## Brute force all the possibilities for 3 lines
 # scores, histories = perm3(5)
@@ -269,4 +296,4 @@ analyze_histories(histories)
 # analyze_histories(histories)
 
 ## Analyze best and worst starting positions for 3 lines
-# starting_positions()
+starting_positions()

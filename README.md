@@ -96,6 +96,56 @@ Note that these 2 starters, that we'll call "the large steps" are both present i
 ('0', 'X', 'X', 'X', 'X')
 ```
 
+Note that the results are coherent as every configuration has its vertical symetry and the sum of duplicates does match the total number of configurations that reach the max/min score.
+
+Looking at the strongest openings we have, the "small steps":
+```
+Number of duplicates: 30
+('X', '0', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+
+Number of duplicates: 30
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 14
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 14
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', 'X', 'X', 'X', '0')
+```
+Which is an intuitive result:
+- Central small steps (the first 2) are the best since for each row, there are 2 otimal tile placements available
+- Lateral small steps (the last 2) are twice as hard to optimize because the third row only has 1 optimal placement for the next round.
+
+But then, why is this worse than the above configuration?
+```
+Number of duplicates: 6
+('0', 'X', 'X', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+```
+**There is something important to understand here: there is an asymetry between high rows and low rows**. This is due to the order of tiling, the top rows are filled first and the bottom rows are filled after. Let's try to optimize that board. One could think that this is fine:
+```
+('0', '1', 'X', 'X', 'X')
+('1', '0', 'X', 'X', 'X')
+('X', '1', '0', 'X', 'X')
+```
+But this is already guaranteed to not being optimal because it forces a vertical gap. Even if we try to fill the middle column "at once", the gap will still happen and a point will be lost:
+```
+('0', '1', '2', 'X', 'X')
+('1', '0', '2', 'X', 'X')
+('2', '1', '0', 'X', 'X')
+```
+
+Of course, we're discussing small point variations, but it's interesting to understand why it happens!
+
 
 
 Below is the README from the main repository:

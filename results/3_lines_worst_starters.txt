@@ -1,24 +1,34 @@
 These are all the unique starting position that can yield the lowest amount of points for 3 lines (47 points)
+They are ranked by the number of duplicates, i.e. the number of combinations that started with this opening.
+The higher the number, the more probable it is to reach the lowest score.
+
+Number of duplicates: 5
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 5
+('X', 'X', 'X', 'X', '0')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 3
+('X', 'X', '0', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 3
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', 'X', '0')
 
-('X', 'X', 'X', 'X', '0')
-('X', 'X', '0', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-
+Number of duplicates: 2
 ('0', 'X', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', 'X', '0')
 
-('X', 'X', '0', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')
-
+Number of duplicates: 2
 ('X', 'X', 'X', 'X', '0')
 ('X', 'X', '0', 'X', 'X')
 ('0', 'X', 'X', 'X', 'X')
 
-('0', 'X', 'X', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')

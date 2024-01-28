@@ -1,144 +1,183 @@
-These are all the unique starting position that can yield the maximum amount of points for 3 lines (70 points)
-('X', 'X', 'X', '0', 'X')
-('X', '0', 'X', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')
+These are all the unique starting position that can yield the maximum amount of points for 3 lines (70 points).
+They are ranked by the number of duplicates, i.e. the number of combinations that started with this opening.
+The higher the number, the more probable it is to reach the highest score.
 
-('X', 'X', 'X', '0', 'X')
-('0', 'X', 'X', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('X', 'X', 'X', 'X', '0')
-('X', 'X', '0', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', '0', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-
+Number of duplicates: 30
 ('X', '0', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', '0', 'X')
 
+Number of duplicates: 30
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 14
 ('X', 'X', '0', 'X', 'X')
 ('X', '0', 'X', 'X', 'X')
 ('0', 'X', 'X', 'X', 'X')
 
+Number of duplicates: 14
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', '0', 'X')
-('X', '0', 'X', 'X', 'X')
-
 ('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 11
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 11
+('X', 'X', 'X', '0', 'X')
 ('X', '0', 'X', 'X', 'X')
 ('0', 'X', 'X', 'X', 'X')
 
-('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('X', '0', 'X', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', '0', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
-('X', 'X', '0', 'X', 'X')
-
-('X', 'X', 'X', '0', 'X')
-('X', 'X', '0', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-
-('X', 'X', '0', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-
-('X', 'X', 'X', 'X', '0')
-('0', 'X', 'X', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
-
-('X', 'X', '0', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', '0', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-('0', 'X', 'X', 'X', 'X')
-
-('X', '0', 'X', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
-
-('X', 'X', 'X', '0', 'X')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
-('0', 'X', 'X', 'X', 'X')
-
-('X', 'X', 'X', 'X', '0')
-('X', 'X', '0', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', 'X', '0', 'X')
-('X', 'X', '0', 'X', 'X')
-('X', 'X', 'X', 'X', '0')
-
-('X', 'X', 'X', '0', 'X')
-('X', 'X', '0', 'X', 'X')
-('0', 'X', 'X', 'X', 'X')
-
-('0', 'X', 'X', 'X', 'X')
-('X', 'X', 'X', '0', 'X')
-('X', 'X', '0', 'X', 'X')
-
-('X', 'X', 'X', 'X', '0')
-('X', '0', 'X', 'X', 'X')
-('X', 'X', '0', 'X', 'X')
-
+Number of duplicates: 10
 ('0', 'X', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', '0', 'X')
 
-('X', 'X', '0', 'X', 'X')
+Number of duplicates: 10
 ('X', 'X', 'X', 'X', '0')
-('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
 
+Number of duplicates: 9
 ('X', '0', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ('X', 'X', 'X', 'X', '0')
 
+Number of duplicates: 9
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 6
+('0', 'X', 'X', 'X', 'X')
 ('X', '0', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+
+Number of duplicates: 6
+('X', 'X', 'X', 'X', '0')
 ('X', 'X', 'X', '0', 'X')
 ('X', 'X', '0', 'X', 'X')
 
+Number of duplicates: 4
 ('0', 'X', 'X', 'X', 'X')
 ('X', '0', 'X', 'X', 'X')
 ('X', 'X', 'X', '0', 'X')
 
+Number of duplicates: 4
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+
+Number of duplicates: 4
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+
+Number of duplicates: 4
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+('X', 'X', 'X', '0', 'X')
+
+Number of duplicates: 4
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+
+Number of duplicates: 4
+('X', 'X', 'X', '0', 'X')
+('0', 'X', 'X', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 4
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 4
+('X', 'X', 'X', '0', 'X')
 ('X', '0', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
+
+Number of duplicates: 4
+('X', 'X', 'X', 'X', '0')
+('X', '0', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+
+Number of duplicates: 4
+('X', 'X', 'X', 'X', '0')
+('X', 'X', 'X', '0', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 3
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 3
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 3
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+('X', 'X', 'X', '0', 'X')
+
+Number of duplicates: 3
+('X', '0', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 3
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 3
+('X', 'X', 'X', '0', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 3
+('X', 'X', 'X', 'X', '0')
+('X', '0', 'X', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 3
+('X', 'X', 'X', 'X', '0')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 1
+('0', 'X', 'X', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 1
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+('X', 'X', 'X', '0', 'X')
+
+Number of duplicates: 1
+('X', 'X', '0', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+Number of duplicates: 1
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', '0', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+Number of duplicates: 1
+('X', 'X', 'X', 'X', '0')
+('0', 'X', 'X', 'X', 'X')
+('X', '0', 'X', 'X', 'X')
+
+Number of duplicates: 1
+('X', 'X', 'X', 'X', '0')
+('X', 'X', 'X', '0', 'X')
 ('0', 'X', 'X', 'X', 'X')
