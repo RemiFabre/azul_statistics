@@ -210,18 +210,63 @@ def analyze_histories(histories):
         print()
 
 
+def process_data(groups):
+    processed_groups = set()
+    for group in groups:
+        processed_group = tuple(
+            tuple("0" if num == 0 else "X" for num in row) for row in group
+        )
+        processed_groups.add(processed_group)
+    return processed_groups
+
+
+def read_data_from_file(file_path):
+    with open(file_path, "r") as file:
+        groups = []
+        current_group = []
+        for line in file:
+            if line.startswith("("):  # Start of a new tuple
+                current_group.append(tuple(map(int, line.strip("()\n").split(", "))))
+            elif line.strip() == "" and current_group:  # Empty line, group is complete
+                groups.append(tuple(current_group))
+                current_group = []
+        if current_group:  # Add the last group if file doesn't end with an empty line
+            groups.append(tuple(current_group))
+    return groups
+
+
+def starting_positions():
+    # Assuming your file content is stored in 'file_content'
+    file_path = "../results/3_lines_worst_combinations.txt"
+    file_path = "../results/3_lines_best_combinations.txt"
+    data = read_data_from_file(file_path)
+    unique_processed_data = process_data(data)
+
+    # Print the processed data
+    for group in unique_processed_data:
+        for line in group:
+            print(line)
+        print()
+
+
+## To test the overall behaviour of the library
 # go()
 # two_line_test()
 
+## Brute force all the possibilities for 1 line
 # scores, histories = perm1(5)
 # plot_scores(scores, 1)
 # analyze_histories(histories)
 
+## Brute force all the possibilities for 2 lines
+scores, histories = perm2(5)
+plot_scores(scores, 2)
+analyze_histories(histories)
 
-# scores, histories = perm2(5)
-# plot_scores(scores, 2)
+## Brute force all the possibilities for 3 lines
+# scores, histories = perm3(5)
+# plot_scores(scores, 3)
 # analyze_histories(histories)
 
-scores, histories = perm3(5)
-plot_scores(scores, 3)
-analyze_histories(histories)
+## Analyze best and worst starting positions for 3 lines
+# starting_positions()

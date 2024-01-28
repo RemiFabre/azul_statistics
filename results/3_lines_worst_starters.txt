@@ -1,0 +1,24 @@
+These are all the unique starting position that can yield the lowest amount of points for 3 lines (47 points)
+('X', 'X', '0', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+('X', 'X', 'X', 'X', '0')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+('X', 'X', '0', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+('X', 'X', 'X', 'X', '0')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')

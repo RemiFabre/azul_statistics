@@ -3,7 +3,7 @@ This is a fork from [here](https://github.com/trajafri/Azul).
 The goal of this repository is only to use their engine to calculate tile scores and brute force combinations to draw statistics.
 
 # Usage
-The only file coded by me is adjacent.py
+In this fork we only coded adjacent.py
 
 To visualize a board one can use:
 ```
@@ -27,10 +27,9 @@ When reading a tiling history, the numbers indicate the round when the tile was 
 => In the first round, the tiles "0" were set, for 2 points. In the second round, the tiles "1" were set, for 6 extra points. 
 
 
-Below is the README from the main repository:
-
 # Analysis
 
+## Understanding scoring
 The way Azul's scoring works is weird and intuition is often wrong.
 For example, one might think that this is the best possible way of filling the 3 first rows:
 ```
@@ -78,7 +77,28 @@ But this is not fine, since the tile in the row 3 created a vertical gap with ro
 (0)
 ```
 
+## Starters
 
+We took the best and the worst scoring results for 3 lines, looked only at the first 3 placed tiles and removed duplicates.
+
+The [best starters](./results/3_lines_best_starters.txt)
+
+The [worst starters](./results/3_lines_worst_starters.txt)
+
+Note that these 2 starters, that we'll call "the large steps" are both present in the best starters and the worst starters, thesetwo are the **only ones present in both sets**:
+```
+('0', 'X', 'X', 'X', 'X')
+('X', 'X', '0', 'X', 'X')
+('X', 'X', 'X', 'X', '0')
+
+('X', 'X', 'X', 'X', '0')
+('X', 'X', '0', 'X', 'X')
+('0', 'X', 'X', 'X', 'X')
+```
+
+
+
+Below is the README from the main repository:
 
 # Azul
 
