@@ -1,0 +1,376 @@
+/* figure.css — the drawing rules for the figures in this repo's README.
+ *
+ * The tile, the empty wall square and the mortared wall row are adapted from
+ * https://github.com/RemiFabre/ludometer (web/play/ui/board.css, MIT, same
+ * author). Everything else — panels, captions, score plates, run brackets,
+ * the histogram — exists only to explain the numbers in the README.
+ *
+ * Not one hex literal below: every colour comes from theme.css.
+ */
+
+/* ==================================================================== page ==
+ * The page ground is transparent on purpose. render.py screenshots at
+ * device-scale 2 and then trims the transparency away, so `.shot` below is
+ * exactly the figure and nothing else — no guessing at window sizes.
+ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: transparent;
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.shot {
+  display: inline-block;
+  padding: 22px;
+  background:
+    repeating-linear-gradient(90deg, var(--linen-thread) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, var(--linen-warm), var(--linen) 55%, var(--linen-dark));
+}
+
+/* =================================================================== panel ==
+ * One plaster card per idea. `.strip` lays several side by side.
+ */
+.panel {
+  padding: 16px 18px 14px;
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  background: linear-gradient(var(--panel-top), var(--panel-bottom));
+  box-shadow: var(--shadow-panel);
+}
+
+.strip { display: flex; align-items: stretch; gap: 18px; }
+.strip.wrap { flex-wrap: wrap; }
+.stack { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  letter-spacing: .01em;
+  margin: 0 0 2px;
+}
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  max-width: 62ch;
+}
+.label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.note {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+.note b { color: var(--ink); }
+.mono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  white-space: pre;
+}
+
+/* ==================================================================== wall ==
+ * Five grouted strips stacked with no gap read as one mortared panel, exactly
+ * as they do on the cardboard.
+ */
+.wall { display: inline-flex; flex-direction: column; }
+
+.wall-row {
+  display: grid;
+  grid-template-columns: repeat(5, var(--tile));
+  align-items: center;
+  gap: 4px;
+  padding: 4px 5px;
+  /* the mortar has to be darker than the squares set into it, or the wall
+   * reads as one slab instead of a grid */
+  background: var(--grout-deep);
+  box-shadow: 0 2px 6px -3px var(--slot-shade) inset;
+}
+.wall-row:first-child { border-radius: 5px 5px 0 0; }
+.wall-row:last-child { border-radius: 0 0 5px 5px; }
+
+/* rows this figure is not talking about, greyed back so the eye goes to the
+ * three rows that matter */
+.wall-row.muted { opacity: .42; }
+
+/* row numbers down the left edge, so "row 2" in the prose finds its row */
+.wallwrap { display: flex; align-items: flex-start; }
+.rowkeys { display: flex; flex-direction: column; }
+.rowkeys.wide span { width: auto; padding: 0 0 0 9px; justify-items: start; white-space: nowrap; }
+.rowkeys span {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: calc(var(--tile) + 8px);
+  font-family: var(--font-label);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* ==================================================================== tile ==
+ * A tile is *there*: saturated, rimmed with its own fired edge, standing a
+ * little proud of the board.
+ */
+.cell {
+  position: relative;
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: var(--radius);
+}
+
+.cell.tile {
+  background-color: var(--base);
+  background-image:
+    radial-gradient(circle at 31% 24%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 56%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .2) 0 17%, rgba(255, 255, 255, 0) 18%),
+    conic-gradient(from 45deg at 50% 50%,
+      rgba(255, 255, 255, .14) 0 25%, rgba(0, 0, 0, .08) 0 50%,
+      rgba(255, 255, 255, .14) 0 75%, rgba(0, 0, 0, .08) 0),
+    linear-gradient(158deg, var(--hi), var(--base) 52%, var(--lo));
+  box-shadow:
+    0 0 0 1.5px var(--rim),
+    0 1px 0 rgba(255, 255, 255, .5) inset,
+    0 -2px 5px rgba(0, 0, 0, .3) inset,
+    var(--shadow-tile-raised);
+}
+
+.cell[data-color="0"] { --base: var(--c0); --hi: var(--c0-hi); --lo: var(--c0-lo); --rim: var(--c0-rim); --stamp: var(--plaster-hi); }
+.cell[data-color="1"] { --base: var(--c1); --hi: var(--c1-hi); --lo: var(--c1-lo); --rim: var(--c1-rim); --stamp: var(--c1-rim); }
+.cell[data-color="2"] { --base: var(--c2); --hi: var(--c2-hi); --lo: var(--c2-lo); --rim: var(--c2-rim); --stamp: var(--plaster-hi); }
+.cell[data-color="3"] { --base: var(--c3); --hi: var(--c3-hi); --lo: var(--c3-lo); --rim: var(--c3-rim); --stamp: var(--plaster-hi); }
+.cell[data-color="4"] { --base: var(--c4); --hi: var(--c4-hi); --lo: var(--c4-lo); --rim: var(--c4-rim); --stamp: var(--c4-lo); }
+
+/* The round number, fired into the glaze. This is the whole point of these
+ * figures: the README's "0 1 2 3 4" grids are these stamps. */
+.stamp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: calc(var(--tile) * .5);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--stamp);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .35);
+}
+.cell[data-color="1"] .stamp,
+.cell[data-color="4"] .stamp { text-shadow: 0 1px 0 rgba(255, 255, 255, .45); }
+
+/* ============================================================= empty slot ==
+ * A hole with the memory of its glaze in it: neutral well, and sunk into it a
+ * small outlined diamond of the colour that belongs there. Flat, translucent,
+ * unlit — never mistakable for a tile.
+ */
+.cell.empty {
+  background: linear-gradient(var(--slot-lo), var(--slot));
+  box-shadow: 0 0 0 1px var(--slot-rim) inset, 0 2px 4px -1px var(--slot-shade) inset;
+}
+.cell.empty::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 55%, var(--ghost-wash), transparent 72%);
+}
+.cell.empty::after {
+  content: "";
+  position: absolute;
+  inset: 27%;
+  transform: rotate(45deg);
+  border: 2px solid var(--ghost-glaze);
+  border-radius: 15%;
+  background: linear-gradient(155deg, var(--ghost-fill), var(--ghost-fill) 45%, var(--ghost-wash));
+  opacity: var(--slot-motif);
+}
+.cell.empty[data-color="0"] { --ghost-glaze: var(--c0-motif); --ghost-fill: var(--c0-ghost); --ghost-wash: var(--c0-wash); }
+.cell.empty[data-color="1"] { --ghost-glaze: var(--c1-motif); --ghost-fill: var(--c1-ghost); --ghost-wash: var(--c1-wash); }
+.cell.empty[data-color="2"] { --ghost-glaze: var(--c2-motif); --ghost-fill: var(--c2-ghost); --ghost-wash: var(--c2-wash); }
+.cell.empty[data-color="3"] { --ghost-glaze: var(--c3-motif); --ghost-fill: var(--c3-ghost); --ghost-wash: var(--c3-wash); }
+.cell.empty[data-color="4"] { --ghost-glaze: var(--c4-motif); --ghost-fill: var(--c4-ghost); --ghost-wash: var(--c4-wash); }
+
+/* the square a figure wants you to look at */
+.cell.spot::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2.5px dashed var(--ink);
+  border-radius: 6px;
+  background: none;
+  z-index: 2;
+}
+
+/* the square a figure is calling a mistake: a hole that stays a hole */
+.cell.gap::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  transform: none;
+  border: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(45deg, transparent 44%, var(--c2) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, var(--c2) 44% 56%, transparent 56%);
+  opacity: .95;
+}
+
+/* the tile that just landed */
+.cell.fresh { animation: none; }
+.cell.fresh::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 2.5px solid var(--ink);
+  border-radius: 7px;
+  opacity: .8;
+  z-index: 3;
+}
+
+/* ============================================================ pattern lines ==
+ * The staircase on the left of a real board. Only the anatomy figure draws it;
+ * it is what makes "row 0 fills first" visible.
+ */
+.lines { display: flex; flex-direction: column; }
+.pline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: calc(var(--tile) + 8px);
+  padding: 0 6px;
+}
+.slot {
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: var(--radius);
+  background: linear-gradient(var(--slot-lo), var(--slot));
+  box-shadow: 0 0 0 1px var(--slot-rim) inset, 0 2px 4px -1px var(--slot-shade) inset;
+}
+.board { display: flex; align-items: center; gap: 14px; }
+
+/* ============================================================= score plate ==
+ * What a board is worth, and what the last round added.
+ */
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+}
+.score .pts { font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+.score .pts-unit { font-size: 13px; font-family: var(--font-label); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+.delta {
+  font-family: var(--font-label);
+  font-size: 14px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--c0-wash);
+  box-shadow: 0 0 0 1px var(--badge-edge);
+  color: var(--gain);
+}
+.delta.hot { background: var(--c1-wash); box-shadow: 0 0 0 1.5px var(--c1); color: var(--grade-slip); }
+.delta.none { background: none; box-shadow: 0 0 0 1px var(--plaster-edge); color: var(--ink-faint); }
+
+/* a round counter that reads as a row of pips, so a GIF frame says where it is
+ * in the five rounds without any text to read */
+.pips { display: flex; gap: 5px; align-items: center; }
+.pip {
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--slot);
+  box-shadow: 0 0 0 1px var(--slot-rim) inset;
+}
+.pip.on { background: var(--c0); box-shadow: 0 0 0 1px var(--c0-rim) inset; }
+
+.verdict {
+  display: inline-block;
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+.verdict.best { background: var(--c0-wash); color: var(--grade-best); }
+.verdict.mid { background: var(--c1-wash); color: var(--grade-slip); }
+.verdict.worst { background: var(--c2-wash); color: var(--grade-blunder); }
+
+/* ================================================================= counter ==
+ * "30 of the 230 maximal fillings start like this."
+ */
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-display);
+}
+.count .n { font-size: 24px; font-weight: 700; }
+.count .of { font-family: var(--font-label); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* a bar showing how large a share of something this is */
+.share { width: 100%; height: 5px; border-radius: 999px; background: var(--plaster-sunk); box-shadow: 0 0 0 1px var(--plaster-edge) inset; overflow: hidden; }
+.share > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--c0-hi), var(--c0)); }
+
+/* =============================================================== histogram ==
+ * Same table, same glazes: one bar per achievable score.
+ */
+.hist { display: flex; align-items: flex-end; gap: 3px; height: 260px; }
+.hist .bin { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; width: 34px; height: 100%; }
+.hist .bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(var(--c0-hi), var(--c0) 40%, var(--c0-lo));
+  box-shadow: 0 0 0 1px var(--c0-rim), 0 1px 0 rgba(255, 255, 255, .3) inset;
+  min-height: 1px;
+}
+.hist .bin.edge-max .bar { background: linear-gradient(var(--c1-hi), var(--c1) 40%, var(--c1-lo)); box-shadow: 0 0 0 1px var(--c1-rim); }
+.hist .bin.edge-min .bar { background: linear-gradient(var(--c2-hi), var(--c2) 40%, var(--c2-lo)); box-shadow: 0 0 0 1px var(--c2-rim); }
+.hist .x { font-family: var(--font-label); font-size: 11px; color: var(--ink-soft); }
+.hist .bin.edge-max .x, .hist .bin.edge-min .x { color: var(--ink); font-weight: 700; }
+.hist .v { font-family: var(--font-label); font-size: 10px; color: var(--ink-faint); height: 12px; }
+
+.axis-y { display: flex; flex-direction: column; justify-content: space-between; height: 260px; padding-right: 8px; text-align: right; }
+.axis-y span { font-family: var(--font-label); font-size: 11px; color: var(--ink-faint); }
+
+.callout {
+  display: block;
+  padding: 9px 12px;
+  border-left: 3px solid var(--c1);
+  border-radius: 0 4px 4px 0;
+  background: var(--c1-wash);
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 56ch;
+}
+.callout.bad { border-left-color: var(--c2); background: var(--c2-wash); }
+.callout.good { border-left-color: var(--c0); background: var(--c0-wash); }
+
+/* ================================================================== arrows ==
+ * Between two boards being compared.
+ */
+.vs {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--ink-faint);
+  padding: 0 2px;
+}
+
+.legend { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.legend .item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-soft); }
+.legend .swatch { flex: none; }
+.legend .swatch .cell { --tile: 26px; }

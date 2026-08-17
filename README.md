@@ -2,13 +2,26 @@
 This is a fork from [here](https://github.com/trajafri/Azul).
 The goal of this repository is only to use their engine to calculate tile scores and brute force combinations to draw statistics.
 
+![](images/filling.gif)
+
 # Usage
 In this fork we only coded adjacent.py
+
+```
+python3 src/adjacent.py lines 1        # 120 orders          (a second)
+python3 src/adjacent.py lines 2        # 14 400 orders       (a few seconds)
+python3 src/adjacent.py lines 3        # 1 728 000 orders    (~5 minutes)
+python3 src/adjacent.py starters 3     # the openings, from the files above
+python3 src/adjacent.py demo           # print a board or two, as a sanity check
+```
 
 To visualize a board one can use:
 ```
 print(boards_to_str([board]))
 ```
+
+All the figures below are drawn from the files in `results/` by
+`python3 viz/make_figures.py` — see [viz/README.md](viz/README.md).
 
 # Results
 
@@ -25,6 +38,8 @@ When reading a tiling history, the numbers indicate the round when the tile was 
 (2, 0, 1, 3, 4)
 ```
 => In the first round, the tiles "0" were set, for 2 points. In the second round, the tiles "1" were set, for 6 extra points. 
+
+![](images/reading.png)
 
 
 # Analysis
@@ -52,7 +67,11 @@ What about this one?
 ```
 -> Well, this is an example of the **worst possible score with 3 lines: 47 points.**
 
+![](images/filling.png)
+
 The reason is that in Azul, a tile that has at least 1 vertical AND 1 horizontal adjacent tile, counts twice. Therefore the goal is to maximize the amount of "counts twice" without creating gaps.
+
+![](images/scoring.png)
 
 Lateral (horizontal) gaps are easy to see, just put a tile to the left or to the right of another tile in the current row.
 
@@ -77,13 +96,19 @@ But this is not fine, since the tile in the row 3 created a vertical gap with ro
 (0)
 ```
 
+![](images/gaps.png)
+
 ## Starters
 
 We took the best and the worst scoring results for 3 lines, looked only at the first 3 placed tiles and removed duplicates.
 
 The [best starters](./results/3_lines_best_starters.txt)
 
+![](images/starters_best.png)
+
 The [worst starters](./results/3_lines_worst_starters.txt)
+
+![](images/starters_worst.png)
 
 Note that these 2 starters, that we'll call "the large steps" are both present in the best starters and the worst starters, thesetwo are the **only ones present in both sets**:
 ```
@@ -95,6 +120,8 @@ Note that these 2 starters, that we'll call "the large steps" are both present i
 ('X', 'X', '0', 'X', 'X')
 ('0', 'X', 'X', 'X', 'X')
 ```
+
+![](images/large_steps.png)
 
 Note that the results are coherent as every configuration has its vertical symetry and the sum of duplicates does match the total number of configurations that reach the max/min score.
 
@@ -131,6 +158,9 @@ Number of duplicates: 6
 ('X', '0', 'X', 'X', 'X')
 ('X', 'X', '0', 'X', 'X')
 ```
+
+![](images/small_steps.png)
+
 **There is something important to understand here: there is an asymetry between high rows and low rows**. This is due to the order of tiling, the top rows are filled first and the bottom rows are filled after. Let's try to optimize that board. One could think that this is fine:
 ```
 ('0', '1', 'X', 'X', 'X')
@@ -144,8 +174,28 @@ But this is already guaranteed to not being optimal because it forces a vertical
 ('2', '1', '0', 'X', 'X')
 ```
 
+![](images/asymmetry.png)
+
 Of course, we're discussing small point variations, but it's interesting to understand why it happens!
 
+
+# Drawing the figures
+
+The boards, the GIF and the histograms above are generated from the files in
+`results/` — no picture in this README was drawn by hand, and no number printed
+on one was typed in.
+
+```
+python3 viz/make_figures.py            # all of them, ~40 s
+python3 viz/make_figures.py filling    # just one
+python3 viz/test_wall.py               # check the figure scoring against src/board.py
+```
+
+The tiles are the ones from [ludometer](https://github.com/RemiFabre/ludometer),
+a full Azul implementation with its own art: `viz/theme.css` is that project's
+palette, vendored unmodified, and the figures are rendered in a headless
+browser. [viz/README.md](viz/README.md) explains how it fits together and how to
+add a figure.
 
 
 Below is the README from the main repository:

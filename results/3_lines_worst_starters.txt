@@ -31,4 +31,3 @@ Number of duplicates: 2
 ('X', 'X', 'X', 'X', '0')
 ('X', 'X', '0', 'X', 'X')
 ('0', 'X', 'X', 'X', 'X')
-

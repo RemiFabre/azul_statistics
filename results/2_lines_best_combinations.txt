@@ -1,4 +1,4 @@
-All of the combinations that score the maximum score for 2 line: 40 points
+All of the combinations that score the maximum score for 2 lines: 40 points
 There are 186 ways of doing it out of 14400, that's 1.292%
 (0, 1, 2, 3, 4)
 (1, 0, 2, 3, 4)

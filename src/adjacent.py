@@ -1,9 +1,33 @@
-import copy
-import random
-from itertools import permutations
+"""Brute-force every order in which the top rows of an Azul wall can be filled.
 
-import matplotlib.pyplot as plt
-import numpy as np
+Everything here drives the engine in the rest of this directory; the only thing
+it adds is the enumeration and the bookkeeping.
+
+    python3 src/adjacent.py lines 1        # 120 orders          (a second)
+    python3 src/adjacent.py lines 2        # 14 400 orders       (a few seconds)
+    python3 src/adjacent.py lines 3        # 1 728 000 orders    (~5 minutes)
+    python3 src/adjacent.py starters 3     # openings, from the files above
+    python3 src/adjacent.py plot 3         # matplotlib histogram, on screen
+    python3 src/adjacent.py demo           # print a board or two, as a sanity check
+
+`lines N` writes results/N_lines_scores.txt and the best/worst combination
+files; `starters N` writes the best/worst starter files. The figures in the
+README are drawn from those same files by ../viz/make_figures.py — see
+../viz/README.md.
+
+A "filling" is written as one tuple per wall row, where the number in column c
+is the round in which that column was filled:
+
+    (0, 1, 2, 3, 4)      round 0 filled column 0, round 1 filled column 1, ...
+    (2, 0, 1, 3, 4)
+"""
+
+import argparse
+import ast
+import copy
+import sys
+from itertools import permutations, product
+from pathlib import Path
 
 from board import *
 from factory import *
@@ -11,8 +35,12 @@ from player import *
 from state import *
 from tile import *
 
+RESULTS = Path(__file__).resolve().parent.parent / "results"
+LINE_SIZE = 5
+
 
 def place_and_score(board, line, col, verbose=False):
+    """Put one tile on the wall at (line, col) and let the engine score it."""
     colors = ["blue", "yellow", "red", "black", "lightblue"]
     color = colors[(col - line) % 5]
     stage = copy.deepcopy(Board.SG_AR)
@@ -25,134 +53,64 @@ def place_and_score(board, line, col, verbose=False):
     return board
 
 
-def go():
-    # st = game_state()
+def demo():
+    """Print a fresh board, then two hand-made fillings, to check the engine."""
     board = Board(0, Board.WALL, Board.SG_AR, 0, False)
     print(boards_to_str([board]))
-
-    # board = board.place_move((0,2))
-    # board = board.place_move((1,2))
-    # board = board.place_move((2,2))
-    # print(boards_to_str([board]))
-
-    # stage = [(1, False), (2, (2, 'blue')), (3, False), (4, False), (5, False)]
-    # board = Board(0, board.wall, stage, 0, False)
-    # print(boards_to_str([board]))
-
-    # board = board.update_score()
-    # print(boards_to_str([board]))
 
     board = place_and_score(board, 0, 0)
     board = place_and_score(board, 1, 0)
     board = place_and_score(board, 2, 2)
+    print(boards_to_str([board]))
+
+    board = Board(0, Board.WALL, Board.SG_AR, 0, False)
+    for i in range(LINE_SIZE):
+        board = place_and_score(board, 0, i)
+        board = place_and_score(board, 1, i)
+    print(boards_to_str([board]))
 
 
-def perm1(line_size):
-    # All the possible ways to fill a line of size line_size
-    spots = list(range(line_size))
-    all_permutations = permutations(spots)
+def brute_force(num_lines, line_size=LINE_SIZE, progress=True):
+    """Score every way of filling `num_lines` lines of `line_size` tiles.
 
-    perm = []
-    # We need to create copies because the iteration consummes the iterator
-    perm1 = copy.deepcopy(all_permutations)
+    One permutation per line: the tuple says, for each column, which round
+    fills it. Rounds happen in order, and within a round the wall is filled
+    from the top line down — that ordering is what makes the answer
+    interesting, and it is the engine's, not ours.
 
-    nb_boards = 0
+    Returns (sorted scores, {score: [the fillings that reach it]}).
+    """
+    perms = list(permutations(range(line_size)))
+    total = len(perms) ** num_lines
+
     scores = []
-    max_score = 0
     histories = {}
-    for p1 in perm1:
-        # print(p)
+    for i, fillings in enumerate(product(perms, repeat=num_lines)):
         board = Board(0, Board.WALL, Board.SG_AR, 0, False)
+        for round in range(line_size):
+            for line, filling in enumerate(fillings):
+                board = place_and_score(board, line, filling.index(round))
 
-        for round in range(5):
-            index = p1.index(round)
-            board = place_and_score(board, 0, index)
-
-        # print(boards_to_str([board]))
-        nb_boards += 1
         scores.append(board.score)
-        if not board.score in histories:
-            histories[board.score] = []
-        histories[board.score].append([p1])
-        if board.score > max_score:
-            max_score = board.score
-    print(nb_boards)
-    # sort scores
-    scores = sorted(scores)
-    print(scores)
-    return scores, histories
+        histories.setdefault(board.score, []).append(fillings)
+
+        if progress and (i + 1) % 10000 == 0:
+            print(f"completion: {i + 1}/{total}", end="\r", flush=True)
+
+    if progress:
+        print(f"completion: {total}/{total}")
+    return sorted(scores), histories
 
 
-def perm2(line_size):
-    # The iteration consummes the iterator
-    perm1 = list(permutations(list(range(line_size))))
-    perm2 = list(permutations(list(range(line_size))))
+def plot_scores(scores, num_lines, out=None):
+    """The score histogram. Pass `out` to write a file instead of showing it.
 
-    nb_boards = 0
-    scores = []
-    total_calls = len(perm1) * len(perm2)
-    histories = {}
-    for p1 in perm1:
-        for p2 in perm2:
-            board = Board(0, Board.WALL, Board.SG_AR, 0, False)
-            for round in range(5):
-                index1 = p1.index(round)
-                board = place_and_score(board, 0, index1)
-                index2 = p2.index(round)
-                board = place_and_score(board, 1, index2)
-            # print(boards_to_str([board]))
-            nb_boards += 1
-            scores.append(board.score)
-            if not board.score in histories:
-                histories[board.score] = []
-            histories[board.score].append((p1, p2))
-        print(f"completion: {nb_boards}/{total_calls}")
-    print(nb_boards)
-    # sort scores
-    scores = sorted(scores)
-    print(scores)
-    return scores, histories
+    The README's charts are not made here — ../viz/make_figures.py draws them
+    from the scores file, in the same style as the board figures.
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
 
-
-def perm3(line_size):
-    # Best possible score is 70.
-    # There are 230 ways of doing it out of 1 728 000, that's only 0.013% !
-    # The iteration consummes the iterator
-    perm1 = list(permutations(list(range(line_size))))
-    perm2 = list(permutations(list(range(line_size))))
-    perm3 = list(permutations(list(range(line_size))))
-
-    nb_boards = 0
-    scores = []
-    total_calls = len(perm1) * len(perm2) * len(perm3)
-    histories = {}
-    for p1 in perm1:
-        for p2 in perm2:
-            for p3 in perm3:
-                board = Board(0, Board.WALL, Board.SG_AR, 0, False)
-                for round in range(5):
-                    index1 = p1.index(round)
-                    board = place_and_score(board, 0, index1)
-                    index2 = p2.index(round)
-                    board = place_and_score(board, 1, index2)
-                    index3 = p3.index(round)
-                    board = place_and_score(board, 2, index3)
-
-                # print(boards_to_str([board]))
-                nb_boards += 1
-                scores.append(board.score)
-                if not board.score in histories:
-                    histories[board.score] = []
-                histories[board.score].append((p1, p2, p3))
-            print(f"completion: {nb_boards}/{total_calls}")
-    print(nb_boards)
-    # sort scores
-    scores = sorted(scores)
-    print(scores)
-    return scores, histories
-
-
-def plot_scores(scores, num_lines):
     bin_edges = np.arange(min(scores) - 0.5, max(scores) + 1.5, 1)
 
     plt.hist(scores, bins=bin_edges, edgecolor="black")
@@ -163,83 +121,60 @@ def plot_scores(scores, num_lines):
     plt.ylabel("Frequency")
     plt.xticks(range(min(scores), max(scores) + 1))
 
-    plt.show()
+    if out:
+        plt.savefig(out, dpi=110, bbox_inches="tight")
+        print(f"wrote {out}")
+    else:
+        plt.show()
 
 
-def two_line_test():
-    board = Board(0, Board.WALL, Board.SG_AR, 0, False)
-    print(boards_to_str([board]))
-    for i in range(5):
-        board = place_and_score(board, 0, i)
-        board = place_and_score(board, 1, i)
+def format_histories(histories, num_lines, which):
+    """The best (or worst) fillings, in the layout the results files use."""
+    assert which in ("maximum", "minimum")
+    nb_boards = sum(len(v) for v in histories.values())
+    score = max(histories) if which == "maximum" else min(histories)
+    chosen = histories[score]
+
+    out = [
+        f"All of the combinations that score the {which} score for "
+        f"{num_lines} lines: {score} points",
+        f"There are {len(chosen)} ways of doing it out of {nb_boards}, "
+        f"that's {len(chosen)/nb_boards*100:.3f}%",
+    ]
+    for history in chosen:
+        out += [str(line) for line in history]
+        out.append("")
+    return "\n".join(out)
 
 
-def analyze_histories(histories):
-    # find best score
-    max_score = 0
-    min_score = 100000
-    nb_boards = 0
-    for score in histories:
-        nb_boards += len(histories[score])
-        if score > max_score:
-            max_score = score
-        if score < min_score:
-            min_score = score
-    best_histories = histories[max_score]
-    worst_histories = histories[min_score]
-    print(
-        f"All of the combinations that score the maximum score for {len(histories[max_score][0])} lines: {max_score} points"
-    )
-    print(
-        f"There are {len(best_histories)} ways of doing it out of {nb_boards}, that's {len(best_histories)/nb_boards*100:.3f}%"
-    )
-    for history in best_histories:
-        for line in history:
-            print(line)
-        print()
-
-    print(
-        f"All of the combinations that score the minimum score for {len(histories[min_score][0])} lines: {min_score} points"
-    )
-    print(
-        f"There are {len(worst_histories)} ways of doing it out of {nb_boards}, that's {len(worst_histories)/nb_boards*100:.3f}%"
-    )
-    for history in worst_histories:
-        for line in history:
-            print(line)
-        print()
-
-
-def process_data(groups):
-    processed_groups = set()
-    for group in groups:
-        processed_group = tuple(
-            tuple("0" if num == 0 else "X" for num in row) for row in group
-        )
-        processed_groups.add(processed_group)
-    return processed_groups
+def analyze_histories(histories, num_lines, write=True):
+    """Report the best and worst fillings; optionally write them to results/."""
+    for which, name in (("maximum", "best"), ("minimum", "worst")):
+        text = format_histories(histories, num_lines, which)
+        print(text[: text.index("\n", text.index("\n") + 1)])
+        if write:
+            path = RESULTS / f"{num_lines}_lines_{name}_combinations.txt"
+            path.write_text(text)
+            print(f"wrote {path}")
 
 
 def process_and_count_groups(groups):
+    """Reduce fillings to their opening — round 0 only — and count duplicates."""
     processed_groups_count = {}
     for group in groups:
         processed_group = tuple(
             tuple("0" if num == 0 else "X" for num in row) for row in group
         )
-        # If the processed group is already in the dictionary, increment its count
-        if processed_group in processed_groups_count:
-            processed_groups_count[processed_group] += 1
-        else:
-            # Otherwise, add the processed group to the dictionary with a count of 1
-            processed_groups_count[processed_group] = 1
-    # sort by count
-    processed_groups_count = dict(
+        processed_groups_count[processed_group] = (
+            processed_groups_count.get(processed_group, 0) + 1
+        )
+    return dict(
         sorted(processed_groups_count.items(), key=lambda item: item[1], reverse=True)
     )
-    return processed_groups_count
 
 
 def read_data_from_file(file_path):
+    """Read the tuples out of a combinations file, grouped by blank lines."""
     with open(file_path, "r") as file:
         groups = []
         current_group = []
@@ -255,45 +190,91 @@ def read_data_from_file(file_path):
     return groups
 
 
-def starting_positions():
-    # Assuming your file content is stored in 'file_content'
-    file_path = "../results/3_lines_worst_combinations.txt"
-    # file_path = "../results/3_lines_best_combinations.txt"
-    data = read_data_from_file(file_path)
-    # unique_processed_data = process_data(data)
-    # # Print the processed data
-    # for group in unique_processed_data:
-    #     for line in group:
-    #         print(line)
-    #     print()
-    unique_processed_groups_count = process_and_count_groups(data)
-
-    # Print the processed data and the count of duplicates for each unique group
-    for group, count in unique_processed_groups_count.items():
-        print(f"Number of duplicates: {count}")
-        for line in group:
-            print(line)
-        print()
+STARTER_HEADER = {
+    "best": (
+        "These are all the unique starting position that can yield the maximum "
+        "amount of points for {num_lines} lines ({score} points).\n"
+        "They are ranked by the number of duplicates, i.e. the number of "
+        "combinations that started with this opening.\n"
+        "The higher the number, the more probable it is to reach the highest score.\n"
+    ),
+    "worst": (
+        "These are all the unique starting position that can yield the lowest "
+        "amount of points for {num_lines} lines ({score} points)\n"
+        "They are ranked by the number of duplicates, i.e. the number of "
+        "combinations that started with this opening.\n"
+        "The higher the number, the more probable it is to reach the lowest score.\n"
+    ),
+}
 
 
-## To test the overall behaviour of the library
-# go()
-# two_line_test()
+def starting_positions(num_lines, write=True):
+    """Turn the best/worst combination files into best/worst starter files."""
+    for name in ("best", "worst"):
+        source = RESULTS / f"{num_lines}_lines_{name}_combinations.txt"
+        if not source.exists():
+            sys.exit(f"{source} is missing — run `lines {num_lines}` first")
+        score = int(source.read_text().split(":")[1].split()[0])
+        counts = process_and_count_groups(read_data_from_file(source))
 
-## Brute force all the possibilities for 1 line
-# scores, histories = perm1(5)
-# plot_scores(scores, 1)
-# analyze_histories(histories)
+        lines = [STARTER_HEADER[name].format(num_lines=num_lines, score=score)]
+        for group, count in counts.items():
+            lines.append(f"Number of duplicates: {count}")
+            lines += [str(line) for line in group]
+            lines.append("")
+        text = "\n".join(lines)
 
-## Brute force all the possibilities for 2 lines
-# scores, histories = perm2(5)
-# plot_scores(scores, 2)
-# analyze_histories(histories)
+        print(f"{name}: {len(counts)} unique openings")
+        if write:
+            path = RESULTS / f"{num_lines}_lines_{name}_starters.txt"
+            path.write_text(text)
+            print(f"wrote {path}")
 
-## Brute force all the possibilities for 3 lines
-# scores, histories = perm3(5)
-# plot_scores(scores, 3)
-# analyze_histories(histories)
 
-## Analyze best and worst starting positions for 3 lines
-starting_positions()
+def run_lines(num_lines, write=True):
+    scores, histories = brute_force(num_lines)
+    if write:
+        path = RESULTS / f"{num_lines}_lines_scores.txt"
+        path.write_text(f"{len(scores)}\n{scores}\n")
+        print(f"wrote {path}")
+    analyze_histories(histories, num_lines, write=write)
+    return scores, histories
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("lines", help="brute-force N lines and write results/")
+    p.add_argument("num_lines", type=int, choices=(1, 2, 3, 4, 5))
+    p.add_argument("--no-write", action="store_true", help="print only")
+
+    p = sub.add_parser("starters", help="derive the openings from the results files")
+    p.add_argument("num_lines", type=int, choices=(1, 2, 3, 4, 5))
+    p.add_argument("--no-write", action="store_true", help="print only")
+
+    p = sub.add_parser("plot", help="matplotlib histogram of a scores file")
+    p.add_argument("num_lines", type=int, choices=(1, 2, 3, 4, 5))
+    p.add_argument("--out", help="write to this path instead of opening a window")
+
+    sub.add_parser("demo", help="print a few boards to check the engine")
+
+    args = parser.parse_args(argv)
+
+    if args.command == "lines":
+        run_lines(args.num_lines, write=not args.no_write)
+    elif args.command == "starters":
+        starting_positions(args.num_lines, write=not args.no_write)
+    elif args.command == "plot":
+        path = RESULTS / f"{args.num_lines}_lines_scores.txt"
+        if not path.exists():
+            sys.exit(f"{path} is missing — run `lines {args.num_lines}` first")
+        text = path.read_text()
+        scores = ast.literal_eval(text[text.index("[") : text.rindex("]") + 1])
+        plot_scores(scores, args.num_lines, out=args.out)
+    elif args.command == "demo":
+        demo()
+
+
+if __name__ == "__main__":
+    main()
