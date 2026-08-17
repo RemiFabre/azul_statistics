@@ -1,4 +1,8 @@
-"""The HTML pieces the figures are built from: walls, score plates, captions."""
+"""The HTML pieces the figures are built from: walls, score plates, captions.
+
+Rows, columns and rounds are numbered 1 to 5 everywhere a reader can see them.
+Internally they are 0-based, so every display of one adds 1.
+"""
 
 from __future__ import annotations
 
@@ -19,7 +23,7 @@ def cell(row: int, col: int, frame, *, stamps=True, gap=False, spot=False,
         if mark_fresh and (row, col) in frame.fresh:
             classes.append("fresh")
         if stamps:
-            body = f"<span class='stamp'>{frame.stamps[(row, col)]}</span>"
+            body = f"<span class='stamp'>{frame.stamps[(row, col)] + 1}</span>"
     else:
         classes.append("empty")
         if gap:
@@ -31,12 +35,7 @@ def cell(row: int, col: int, frame, *, stamps=True, gap=False, spot=False,
 
 def wall(frame, *, rows=W.SIZE, live_rows=None, stamps=True, gaps=(), spots=(),
          mark_fresh=False, tile=TILE, row_keys=False, row_notes=None) -> str:
-    """A wall. Rows past ``live_rows`` are drawn greyed back.
-
-    ``live_rows`` defaults to "as many rows as the figure is about", i.e. the
-    rows the grid actually mentions — the other two are still drawn, because
-    seeing that this is the top of a real 5×5 wall is half the explanation.
-    """
+    """A wall. Rows past ``live_rows`` are drawn greyed back."""
     live = rows if live_rows is None else live_rows
     out = [f"<div class='wall' style='--tile:{tile}px'>"]
     for r in range(rows):
@@ -52,7 +51,7 @@ def wall(frame, *, rows=W.SIZE, live_rows=None, stamps=True, gaps=(), spots=(),
         left = right = ""
         if row_keys:
             left = ("<div class='rowkeys'>" +
-                    "".join(f"<span>{r}</span>" for r in range(rows)) + "</div>")
+                    "".join(f"<span>{r + 1}</span>" for r in range(rows)) + "</div>")
         if row_notes:
             right = ("<div class='rowkeys wide'>" +
                      "".join(f"<span>{n}</span>" for n in row_notes) + "</div>")
@@ -61,28 +60,25 @@ def wall(frame, *, rows=W.SIZE, live_rows=None, stamps=True, gaps=(), spots=(),
     return body
 
 
-def grid_wall(grid, **kw) -> str:
-    """A finished wall, straight from a README grid."""
-    frames = W.play(grid)
-    return wall(frames[-1], live_rows=kw.pop("live_rows", len(grid)), **kw)
-
-
-def score(frame, *, delta=True, unit="points") -> str:
+def score(frame, *, delta=True, unit="points", running=True) -> str:
+    """The score plate. ``delta`` adds what this round has earned so far."""
     d = ""
     if delta:
         if frame.gained:
             d = f"<span class='delta'>+{frame.gained} this round</span>"
         else:
-            d = "<span class='delta none'>nothing placed yet</span>"
+            d = "<span class='delta none'>round 1</span>"
     return (f"<div class='score'><span class='pts'>{frame.score}</span>"
             f"<span class='pts-unit'>{unit}</span>{d}</div>")
 
 
-def pips(current: int, total: int = W.SIZE) -> str:
+def pips(current: int, total: int = W.SIZE, suffix="") -> str:
+    """A row of dots for which round we are in. ``current`` is 0-based."""
     dots = "".join(f"<span class='pip{' on' if i <= current else ''}'></span>"
                    for i in range(total))
-    return f"<div class='pips'>{dots}<span class='label' style='margin-left:8px'>" \
-           f"{'round ' + str(current) if current >= 0 else 'empty board'}</span></div>"
+    label = f"round {current + 1} of {total}" if current >= 0 else "before round 1"
+    return (f"<div class='pips'>{dots}<span class='label' style='margin-left:8px'>"
+            f"{label}{suffix}</span></div>")
 
 
 def verdict(text: str, kind: str = "mid") -> str:
@@ -96,26 +92,32 @@ def title(text: str, sub: str = "") -> str:
     return out
 
 
-def panel(inner: str) -> str:
-    return f"<div class='panel'>{inner}</div>"
+def panel(inner: str, width: str = "") -> str:
+    style = f" style='max-width:{width}'" if width else ""
+    return f"<div class='panel'{style}>{inner}</div>"
 
 
 def shot(inner: str) -> str:
     return f"<div class='shot'>{inner}</div>"
 
 
-def board_card(grid, *, heading, note="", verdict_kind=None, verdict_text=None,
-               tile=TILE, stamps=True, gaps=(), spots=(), live_rows=None) -> str:
-    """One wall with its own little header: the unit these figures repeat."""
-    frames = W.play(grid)
-    head = f"<div class='label'>{heading}</div>"
-    tag = verdict(verdict_text, verdict_kind) if verdict_text else ""
-    body = wall(frames[-1], live_rows=live_rows if live_rows is not None else len(grid),
-                stamps=stamps, gaps=gaps, spots=spots, tile=tile)
-    foot = score(frames[-1], delta=False)
-    extra = f"<p class='note'>{note}</p>" if note else ""
-    return ("<div class='stack' style='gap:9px'>" + head + body + foot + tag + extra +
-            "</div>")
+def label(text: str) -> str:
+    return f"<div class='label'>{text}</div>"
+
+
+def note(text: str, width="") -> str:
+    style = f" style='max-width:{width}'" if width else ""
+    return f"<p class='note'{style}>{text}</p>"
+
+
+def chips(frames, highlight=None) -> str:
+    """One pill per round: what that round earned."""
+    out = []
+    for f in frames:
+        hot = " hot" if f.round == highlight else ""
+        out.append(f"<span class='delta{hot}'>round {f.round + 1} &nbsp;"
+                   f"+{f.gained}</span>")
+    return f"<div class='strip wrap' style='gap:5px'>{''.join(out)}</div>"
 
 
 def pattern_lines(tile=TILE) -> str:

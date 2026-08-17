@@ -12,7 +12,7 @@ it adds is the enumeration and the bookkeeping.
 
 `lines N` writes results/N_lines_scores.txt and the best/worst combination
 files; `starters N` writes the best/worst starter files. The figures in the
-README are drawn from those same files by ../viz/make_figures.py — see
+README are drawn from those same files by ../viz/make_figures.py. See
 ../viz/README.md.
 
 A "filling" is written as one tuple per wall row, where the number in column c
@@ -75,8 +75,8 @@ def brute_force(num_lines, line_size=LINE_SIZE, progress=True):
 
     One permutation per line: the tuple says, for each column, which round
     fills it. Rounds happen in order, and within a round the wall is filled
-    from the top line down — that ordering is what makes the answer
-    interesting, and it is the engine's, not ours.
+    from the top line down. That ordering is what makes the answer interesting,
+    and it is the engine's, not ours.
 
     Returns (sorted scores, {score: [the fillings that reach it]}).
     """
@@ -105,7 +105,7 @@ def brute_force(num_lines, line_size=LINE_SIZE, progress=True):
 def plot_scores(scores, num_lines, out=None):
     """The score histogram. Pass `out` to write a file instead of showing it.
 
-    The README's charts are not made here — ../viz/make_figures.py draws them
+    The README's charts are not made here. ../viz/make_figures.py draws them
     from the scores file, in the same style as the board figures.
     """
     import matplotlib.pyplot as plt
@@ -159,7 +159,7 @@ def analyze_histories(histories, num_lines, write=True):
 
 
 def process_and_count_groups(groups):
-    """Reduce fillings to their opening — round 0 only — and count duplicates."""
+    """Reduce fillings to their opening (round 0 only) and count duplicates."""
     processed_groups_count = {}
     for group in groups:
         processed_group = tuple(
@@ -213,7 +213,7 @@ def starting_positions(num_lines, write=True):
     for name in ("best", "worst"):
         source = RESULTS / f"{num_lines}_lines_{name}_combinations.txt"
         if not source.exists():
-            sys.exit(f"{source} is missing — run `lines {num_lines}` first")
+            sys.exit(f"{source} is missing. Run `lines {num_lines}` first")
         score = int(source.read_text().split(":")[1].split()[0])
         counts = process_and_count_groups(read_data_from_file(source))
 
@@ -268,7 +268,7 @@ def main(argv=None):
     elif args.command == "plot":
         path = RESULTS / f"{args.num_lines}_lines_scores.txt"
         if not path.exists():
-            sys.exit(f"{path} is missing — run `lines {args.num_lines}` first")
+            sys.exit(f"{path} is missing. Run `lines {args.num_lines}` first")
         text = path.read_text()
         scores = ast.literal_eval(text[text.index("[") : text.rindex("]") + 1])
         plot_scores(scores, args.num_lines, out=args.out)

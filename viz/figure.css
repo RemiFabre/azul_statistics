@@ -1,9 +1,9 @@
-/* figure.css — the drawing rules for the figures in this repo's README.
+/* figure.css: the drawing rules for the figures in this repo's README.
  *
  * The tile, the empty wall square and the mortared wall row are adapted from
  * https://github.com/RemiFabre/ludometer (web/play/ui/board.css, MIT, same
- * author). Everything else — panels, captions, score plates, run brackets,
- * the histogram — exists only to explain the numbers in the README.
+ * author). Everything else (panels, captions, score plates, the histogram)
+ * exists only to explain the numbers in the README.
  *
  * Not one hex literal below: every colour comes from theme.css.
  */
@@ -11,7 +11,7 @@
 /* ==================================================================== page ==
  * The page ground is transparent on purpose. render.py screenshots at
  * device-scale 2 and then trims the transparency away, so `.shot` below is
- * exactly the figure and nothing else — no guessing at window sizes.
+ * exactly the figure and nothing else. No guessing at window sizes.
  */
 * { box-sizing: border-box; }
 
@@ -174,7 +174,7 @@ body {
 /* ============================================================= empty slot ==
  * A hole with the memory of its glaze in it: neutral well, and sunk into it a
  * small outlined diamond of the colour that belongs there. Flat, translucent,
- * unlit — never mistakable for a tile.
+ * unlit, never mistakable for a tile.
  */
 .cell.empty {
   background: linear-gradient(var(--slot-lo), var(--slot));
@@ -267,6 +267,7 @@ body {
  */
 .score {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 8px;
   font-family: var(--font-display);
@@ -282,6 +283,7 @@ body {
   box-shadow: 0 0 0 1px var(--badge-edge);
   color: var(--gain);
 }
+.delta.loss { background: var(--c2-wash); box-shadow: 0 0 0 1px var(--c2); color: var(--loss); }
 .delta.hot { background: var(--c1-wash); box-shadow: 0 0 0 1.5px var(--c1); color: var(--grade-slip); }
 .delta.none { background: none; box-shadow: 0 0 0 1px var(--plaster-edge); color: var(--ink-faint); }
 

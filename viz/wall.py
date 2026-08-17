@@ -1,4 +1,4 @@
-"""The Azul wall, its colours, and its scoring — in about fifty lines.
+"""The Azul wall, its colours, and its scoring, in about fifty lines.
 
 The README's notation is a grid of round numbers: one row per pattern line,
 and the number in column ``c`` is the round in which that column's tile reached
@@ -34,7 +34,7 @@ def points_for(placed: set[tuple[int, int]], row: int, col: int) -> int:
     A tile scores the length of its horizontal run if it has any horizontal
     neighbour, plus the length of its vertical run if it has any vertical one,
     and 1 if it is alone. So a tile with a neighbour in *both* directions is
-    counted twice — which is the whole subject of the README.
+    counted twice, which is the whole subject of the README.
     """
     def run(dr: int, dc: int) -> int:
         n, r, c = 0, row + dr, col + dc
@@ -52,41 +52,58 @@ def points_for(placed: set[tuple[int, int]], row: int, col: int) -> int:
 class Frame:
     """One board state: what is on the wall, and what it is worth."""
 
-    def __init__(self, rnd, placed, stamps, fresh, score, gained):
+    def __init__(self, rnd, placed, stamps, fresh, score, gained,
+                 last=0, closes_round=True):
         self.round = rnd                 # -1 for the empty starting board
         self.placed = placed             # {(row, col)}
         self.stamps = stamps             # {(row, col): round it was placed}
-        self.fresh = fresh               # tiles placed *this* round
+        self.fresh = fresh               # the tiles that just landed
         self.score = score               # cumulative
-        self.gained = gained             # what this round added
+        self.gained = gained             # what this round has added so far
+        self.last = last                 # what the tile that just landed scored
+        self.closes_round = closes_round  # was that the last tile of the round?
 
 
-def play(grid, rounds: int = SIZE):
-    """Replay a README grid, returning ``rounds + 1`` frames (empty first).
+def steps(grid, rounds: int = SIZE):
+    """Replay a filling one tile at a time, in the order the wall receives them.
 
     ``grid`` is a sequence of rows; each row is a sequence of 5 entries, where
     an ``int`` is the round that column is filled in and ``None`` means never.
+
     Within a round the wall is filled top row first, exactly as the engine does
-    it (`help_score_staging` walks the pattern lines 0→4), which matters: a
-    tile in row 0 is already there when row 1's tile of the same round lands.
+    it (``help_score_staging`` walks the pattern lines downwards). That is the
+    single most important fact in this repository, so the animations show it:
+    each tile lands on its own frame.
+
+    The first frame is the empty board.
     """
     placed: set[tuple[int, int]] = set()
     stamps: dict[tuple[int, int], int] = {}
     score = 0
-    frames = [Frame(-1, set(), {}, set(), 0, 0)]
+    out = [Frame(-1, set(), {}, set(), 0, 0)]
 
     for rnd in range(rounds):
-        fresh, gained = set(), 0
-        for row, spec in enumerate(grid):
-            for col, when in enumerate(spec):
-                if when == rnd:
-                    gained += points_for(placed, row, col)
-                    placed.add((row, col))
-                    stamps[(row, col)] = rnd
-                    fresh.add((row, col))
-        score += gained
-        frames.append(Frame(rnd, set(placed), dict(stamps), fresh, score, gained))
+        landing = sorted((row, col)
+                         for row, spec in enumerate(grid)
+                         for col, when in enumerate(spec) if when == rnd)
+        gained = 0
+        for i, (row, col) in enumerate(landing):
+            points = points_for(placed, row, col)
+            placed.add((row, col))
+            stamps[(row, col)] = rnd
+            score += points
+            gained += points
+            out.append(Frame(rnd, set(placed), dict(stamps), {(row, col)},
+                             score, gained, last=points,
+                             closes_round=(i == len(landing) - 1)))
+    return out
 
+
+def play(grid, rounds: int = SIZE):
+    """The same replay, one frame per round instead of one per tile."""
+    frames = [f for f in steps(grid, rounds) if f.closes_round]
+    for f in frames[1:]:
+        f.fresh = {p for p, r in f.stamps.items() if r == f.round}
     return frames
 
 

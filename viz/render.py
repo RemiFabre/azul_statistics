@@ -2,7 +2,7 @@
 
 The drawing is done by a browser, because the tiles in ``figure.css`` are
 gradients and shadows rather than bitmaps, and because that stylesheet is a
-straight lift from a real Azul client — so the figures look like the game
+straight lift from a real Azul client, so the figures look like the game
 instead of like a plot.
 
 The trick that keeps this simple: the page background is transparent, we
@@ -10,8 +10,8 @@ screenshot a window that is deliberately too big, and then trim the
 transparency away. The image is therefore exactly the figure, and no code has
 to predict how wide a caption will be.
 
-Requires ``google-chrome`` (or ``chromium``), ImageMagick's ``convert``, and —
-for GIFs — ``ffmpeg`` and optionally ``gifsicle``.
+Requires ``google-chrome`` (or ``chromium``) and ImageMagick's ``convert``.
+GIFs also need ``ffmpeg``, and ``gifsicle`` if it is installed.
 """
 
 from __future__ import annotations
@@ -86,8 +86,8 @@ def shoot(body: str, out: Path, size: tuple[int, int] | None = None,
 
 
 def _squeeze(png: Path) -> None:
-    """Palette-quantise a figure. Roughly 4x smaller, no visible difference —
-    these are flat panels with a handful of gradients, not photographs."""
+    """Palette-quantise a figure. Roughly 4x smaller with no visible difference.
+    These are flat panels with a handful of gradients, not photographs."""
     if not shutil.which("pngquant"):
         return
     subprocess.run(["pngquant", "--quality=88-98", "--speed", "1", "--force",
@@ -129,8 +129,8 @@ def gif(frames: list[Path], out: Path, holds: list[int], fps: int = 4,
         downscale: bool = True) -> None:
     """Assemble a GIF.
 
-    ``holds[i]`` is how many ticks of ``1/fps`` frame *i* stays on screen — the
-    last board wants a long pause, the intermediate rounds a short one. Repeats
+    ``holds[i]`` is how many ticks of ``1/fps`` frame *i* stays on screen. The
+    last board wants a long pause, the tiles inside a round a short one. Repeats
     are written out as real frames because a constant frame rate is what lets
     ffmpeg build one good palette for the whole animation; GIF has 256 colours
     to spend and these tiles are all gradient.
