@@ -31,7 +31,7 @@ you already play Azul well, there is something here for you.
 2. **A column grows downwards for free.** You can drop several tiles into the
    same column in the same round at no cost.
 3. **A column grows upwards one tile per round, maximum.** Any faster and some
-   tiles land on empty squares and count once instead of twice.
+   tiles will create a vertical hole.
 
 These are rules for tiling optimally. In a real game, with opponents and
 factories, following them blindly is not always the best move.
