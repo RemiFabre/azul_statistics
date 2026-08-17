@@ -81,8 +81,6 @@ Only 230 of them reach 70 points, which is 0.013%. Only 20 end at 47. The
 obvious filling, the symmetric one that looks like the cleanest thing you could
 possibly do, scores 68.
 
-The way Azul's scoring works is weird and intuition is often wrong.
-
 ## Why weird tilings can score more than ordered ones
 
 Azul's scoring has one strange rule: a tile can count double. This happens every
@@ -126,7 +124,7 @@ points already lost.
 ## The first three tiles
 
 Everything below is about filling the top three rows. It generalizes to all
-five, but the top three rows is where most of the strategic decisions happen.
+five, but it's harder to visualize so we settled on 3 rows for this study.
 
 We took the best and the worst scoring results for 3 lines, looked only at the
 first 3 placed tiles and removed duplicates.

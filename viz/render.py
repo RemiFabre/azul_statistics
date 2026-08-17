@@ -115,14 +115,22 @@ def shoot_series(bodies: list[str], into: Path, stem: str = "frame") -> list[Pat
         probe.unlink()
 
     canvas = (max(w for w, _ in sizes), max(h for _, h in sizes))
-    paths = []
-    for i, body in enumerate(bodies):
-        path = into / f"{stem}-{i:03d}.png"
-        # no per-frame quantising: ffmpeg builds one palette for the whole
-        # animation, and pre-quantised frames make it flicker
-        shoot(body, path, size=canvas, squeeze=False)
-        paths.append(path)
-    return paths
+    for _attempt in range(3):
+        paths, final = [], []
+        for i, body in enumerate(bodies):
+            path = into / f"{stem}-{i:03d}.png"
+            # no per-frame quantising: ffmpeg builds one palette for the whole
+            # animation, and pre-quantised frames make it flicker
+            final.append(shoot(body, path, size=canvas, squeeze=False))
+            paths.append(path)
+        # Pinning the canvas can reflow a caption and grow one frame past it.
+        # Mixed frame sizes make ffmpeg pad with garbage, so grow the canvas to
+        # whatever actually came out and render again until it is stable.
+        grown = (max(w for w, _ in final), max(h for _, h in final))
+        if grown == canvas and len({s for s in final}) == 1:
+            return paths
+        canvas = grown
+    raise SystemExit(f"{stem}: frames refuse to settle on one canvas size")
 
 
 def gif(frames: list[Path], out: Path, holds: list[int], fps: int = 4,
