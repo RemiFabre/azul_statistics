@@ -11,12 +11,12 @@ you already play Azul well, there is something here for you.
 
 ## Contents
 
-- [The short version](#the-short-version)
+- [The rules learned from this study](#the-rules-learned-from-this-study)
 - [How to read these boards](#how-to-read-these-boards)
-- [One row: what does the order cost?](#one-row-what-does-the-order-cost)
+- [The simplest case: one row](#the-simplest-case-one-row)
 - [Two rows: the columns start to matter](#two-rows-the-columns-start-to-matter)
 - [Three rows: 47 to 70](#three-rows-47-to-70)
-- [Why a tile can be worth seven](#why-a-tile-can-be-worth-seven)
+- [Why weird tilings can score more than ordered ones](#why-weird-tilings-can-score-more-than-ordered-ones)
 - [Horizontal gaps are easy. Vertical ones are not.](#horizontal-gaps-are-easy-vertical-ones-are-not)
 - [Holes above a tile need one round each](#holes-above-a-tile-need-one-round-each)
 - [The first three tiles](#the-first-three-tiles)
@@ -24,24 +24,17 @@ you already play Azul well, there is something here for you.
 - [Notes on the numbers](#notes-on-the-numbers)
 - [The code](#the-code)
 
-## The short version
-
-Five rules, all of them measured rather than guessed. The rest of this page is
-where each one comes from.
+## The rules learned from this study
 
 1. **Never leave a hole in a row you are filling.** On one row alone that is
    worth up to 4 points.
 2. **A column grows downwards for free.** You can drop several tiles into the
-   same column in the same round at no cost, as long as each one lands below the
-   last, because the wall is filled from the top row down.
-3. **A column grows upwards one tile per round.** Count the empty squares above
-   each tile you have already placed. If there are more of them than there are
-   rounds left, the difference is tiles that will score nothing vertically.
-4. **Open with a small step near the middle.** One tile in each of your first
-   rows, one column apart, away from the edges. No other opening keeps the
-   maximum alive as often, and it beats the plain diagonal five to one.
-5. **Keep your choices in the top rows.** The top rows are tiled first, so a row
-   that runs out of good squares early costs more than one that runs out late.
+   same column in the same round at no cost.
+3. **A column grows upwards one tile per round, maximum.** Any faster and some
+   tiles land on empty squares and count once instead of twice.
+
+These are rules for tiling optimally. In a real game, with opponents and
+factories, following them blindly is not always the best move.
 
 ## How to read these boards
 
@@ -50,22 +43,19 @@ numbered 1 to 5.
 
 ![](images/notation.gif)
 
-Inside a single round the wall is filled from the top row down. That is worth
-remembering, because most of what follows is a consequence of it.
+Remember that a wall is filled from the top row down.
 
-## One row: what does the order cost?
+## The simplest case: one row
 
-Five tiles, five rounds, one row. There are 120 orders and they score between 11
-and 15 points.
+Let's use this simplified case to understand what a good tiling is and how many
+points a poor one loses. There are 120 ways to tile one row, and they score
+between 11 and 15 points.
 
 ![](images/one_line.gif)
 
 15 is what you get whenever the tiles already placed always form a single block,
-so the row grows from one end or the other. There are 16 such orders out of 120,
-one for every way of choosing left or right four times. 11 is the worst, and it
-happens 40 times: every one of those orders breaks the row into two or three
-separate blocks before joining them up. Four points, on a single row, decided by
-nothing but order.
+so the row grows from one end or the other. 11 is what you get when the row
+breaks into separate blocks that only join at the end.
 
 ![](results/1_lines.png)
 
@@ -75,8 +65,9 @@ Ten tiles over the same five rounds. 14 400 orders, from 29 to 40 points.
 
 ![](images/two_lines.gif)
 
-The obvious filling, middle first and then outwards on both rows, is worth 39. It
-is already one point short of the maximum, and nothing about it looks wrong.
+The obvious filling, middle first and then outwards on both rows, is worth 39.
+This is already one point less than the optimal way. To me this was not
+intuitive at all, and the next sections explain why it happens.
 
 ![](results/2_lines.png)
 
@@ -86,55 +77,56 @@ is already one point short of the maximum, and nothing about it looks wrong.
 
 ![](results/3_lines.png)
 
-Only 230 of them reach 70 points, which is 0.013%. Only 20 end at 47. The obvious
-filling, the symmetric one that looks like the cleanest thing you could possibly
-do, scores 68. The animation at the top of this page is those three orders side
-by side, and it is worth watching which one is ahead after round 3.
+Only 230 of them reach 70 points, which is 0.013%. Only 20 end at 47. The
+obvious filling, the symmetric one that looks like the cleanest thing you could
+possibly do, scores 68.
 
 The way Azul's scoring works is weird and intuition is often wrong.
 
-## Why a tile can be worth seven
+## Why weird tilings can score more than ordered ones
 
-A tile that has at least 1 vertical AND 1 horizontal adjacent tile counts twice.
-Therefore the goal is to maximize the amount of "counts twice" without creating
-gaps.
+Azul's scoring has one strange rule: a tile can count double. This happens every
+time the tile you place has at least one vertical adjacent tile AND one
+horizontal adjacent tile. When that is true, the tile counts twice, once in its
+row and once in its column.
 
-![](images/scoring.png)
+The smallest example is a 2x2 block built in two rounds:
+
+![](images/double_count.gif)
+
+The obvious filling, one column then the other, scores 3 then 6: 9 points. The
+diagonal start scores only 2 in round 1, both tiles are alone. But in round 2
+each new tile arrives with a row neighbour and a column neighbour, counts
+double, and scores 4: 10 points.
+
+This is the trick behind every non-intuitive result on this page. The best
+tilings are the ones that score these double points as often as possible,
+without creating gaps.
 
 ## Horizontal gaps are easy. Vertical ones are not.
 
 Lateral (horizontal) gaps are easy to see, just put a tile to the left or to the
 right of another tile in the current row.
 
-Vertical gaps are a bit tricky to see. Almost the same rule, put a tile above or
-below another tile in the current column, but with one catch, and the catch is
-the most useful thing on this page.
+Vertical gaps are trickier, and the reason is the fill order. Tiles are placed
+from the top row down, so below an existing tile you can place as many tiles as
+you want in a single round and lose nothing. Above an existing tile, you can
+only place one per round.
 
-![](images/gaps.png)
-
-Filling all three squares of a column in a single round costs nothing, because
-the wall is filled from the top row down and each tile already has the one above
-it to lean on. Leaving row 2 for later costs a point, because in round 1 the
-row-3 tile has nothing above it.
-
-So a column is free to grow **downwards** and expensive to grow **upwards**.
+![](images/gaps.gif)
 
 ## Holes above a tile need one round each
 
-Once a tile is on the wall, the only way to extend its column upwards without
-waste is one tile per round. A tile only counts a vertical neighbour that is
-already there, and within a round the tiles above land first, so two tiles
-stacked into the same column above an existing tile means the upper one lands on
-top of an empty square and scores nothing vertically.
-
 ![](images/column_budget.png)
 
-With **H** empty squares above a tile and **R** rounds left, at least **H minus
-R** of the tiles you put there are wasted. Three holes and one round left is two
-wasted tiles, and it has already happened whether you have noticed or not. This
-is the one thing on this page you can count at the table.
+Every empty square above one of your tiles is a commitment: it will take a full
+round to fill without waste. More holes above your tiles than rounds left means
+points already lost.
 
 ## The first three tiles
+
+Everything below is about filling the top three rows. It generalizes to all
+five, but the top three rows is where most of the strategic decisions happen.
 
 We took the best and the worst scoring results for 3 lines, looked only at the
 first 3 placed tiles and removed duplicates.
@@ -147,15 +139,12 @@ The [worst starters](./results/3_lines_worst_starters.txt):
 
 ![](images/starters_worst.png)
 
-(Those two files, like everything in `results/`, count rounds from 0. The figures
-renumber them.)
-
 The two most likely routes to the worst possible score put a tile in row 1 and a
 tile in row 3 of the **same column**, leaving row 2 empty. That is exactly the
 vertical gap above, committed in the first round.
 
 Note that the results are coherent as every configuration has its vertical
-symetry and the sum of duplicates does match the total number of configurations
+symmetry and the sum of duplicates does match the total number of configurations
 that reach the max/min score.
 
 Two starters, that we'll call "the large steps", are present in the best starters
@@ -175,24 +164,27 @@ But then, why is the plain diagonal worse than both?
 
 ![](images/small_steps.png)
 
-Count, for each row, how many squares that row's first tile can still grow into.
-Read the three counts downwards and you have the answer: 2·2·2 keeps 30 of the
-perfect fillings alive, 2·2·1 keeps 14, and 1·2·2 keeps only 6. The same number
-of squares in total, less than half as many perfect fillings, because the row
-that is short of a choice is row 1, and row 1 is tiled first.
+The answer is not the edge. It is a forced vertical gap, and it deserves its own
+section.
 
 ## Rows are not interchangeable
 
-**There is something important to understand here: there is an asymetry between
+**There is something important to understand here: there is an asymmetry between
 high rows and low rows.** This is due to the order of tiling, the top rows are
 filled first and the bottom rows are filled after.
 
-![](images/asymmetry.gif)
+Both boards below open with the same diagonal and differ by a single tile in
+round 2. Here they are at the end of round 2:
 
-Both boards open with the same diagonal. They differ by a single tile in round 2,
-and the entire difference lands in round 3: on the left, the row-1 tile of column
-3 arrives before the row-2 tile below it and cannot count it, so it scores 3
-instead of 6. Two points, and no way to get them back.
+![](images/forced.png)
+
+On the left board, the only way to continue row 1 without a lateral gap is the
+dashed square of column 3. But column 3 already has a tile on row 3, and the two
+squares above it can only be filled one per round. The square below is still
+empty, so in round 3 the row-1 tile lands alone, counts once, and 68 is the best
+this board can reach.
+
+![](images/asymmetry.gif)
 
 Of course, we're discussing small point variations, but it's interesting to
 understand why it happens!
@@ -215,8 +207,9 @@ counts sum to exactly 230 and the worst to exactly 20, and every opening appears
 together with its mirror image and the same count.
 
 **The one-round-per-hole rule is exhaustive, not illustrative.** Every way of
-distributing H holes over R rounds was enumerated. The best result always loses
-exactly H minus R tiles.
+distributing the holes above a tile over the remaining rounds was enumerated, and
+the count of wasted tiles is always the number of holes minus the number of
+rounds.
 
 ## The code
 

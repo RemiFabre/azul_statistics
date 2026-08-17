@@ -62,12 +62,13 @@ the analysis rests on.
 | `one_line` | `images/one_line.gif`, best and worst on one row |
 | `two_lines` | `images/two_lines.gif`, obvious, best and worst on two rows |
 | `three_lines` | `images/three_lines.gif`, the same on three rows. The hero figure |
-| `scoring` | `images/scoring.png`, why a tile can be worth seven |
-| `gaps` | `images/gaps.png`, one column, three orders |
-| `budget` | `images/column_budget.png`, holes above a tile versus rounds left |
+| `double_count` | `images/double_count.gif`, the 2x2 example of the double count |
+| `gaps` | `images/gaps.gif`, one column, three orders |
+| `budget` | `images/column_budget.png`, the squares above a tile, marked |
+| `forced` | `images/forced.png`, the position after round 2, one tile apart |
 | `starters` | `images/starters_{best,worst}.png`, the openings |
 | `bothsets` | `images/large_steps.png`, the two openings in both lists |
-| `steps` | `images/small_steps.png`, 2·2·2 against 2·2·1 against 1·2·2 |
+| `steps` | `images/small_steps.png`, the three staircase openings |
 | `asymmetry` | `images/asymmetry.gif`, one tile, two points |
 | `histograms` | `results/{1,2,3}_lines.png` |
 
